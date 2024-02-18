@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_todo_c10_sun3/firebase_utils.dart';
+import 'package:flutter_app_todo_c10_sun3/model/task.dart';
 import 'package:flutter_app_todo_c10_sun3/my_theme.dart';
+import 'package:flutter_app_todo_c10_sun3/providers/list_provider.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 
 class TaskListItem extends StatelessWidget {
+  Task task;
+
+  TaskListItem({required this.task});
+
   @override
   Widget build(BuildContext context) {
+    var listProvider = Provider.of<ListProvider>(context);
     return Container(
       margin: EdgeInsets.all(12),
       child: Slidable(
@@ -20,6 +29,11 @@ class TaskListItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               onPressed: (context) {
                 /// delete task
+                FirebaseUtils.deleteTaskFromFireStore(task)
+                    .timeout(Duration(milliseconds: 500), onTimeout: () {
+                  print('task deleted successfully');
+                  listProvider.getAllTasksFromFireStore();
+                });
               },
               backgroundColor: MyTheme.redColor,
               foregroundColor: MyTheme.whiteColor,
@@ -46,18 +60,19 @@ class TaskListItem extends StatelessWidget {
               ),
               Expanded(
                   child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                   Text(
-                    'Title',
+                    task.title ?? '',
                     style: Theme.of(context)
                         .textTheme
                         .titleMedium
                         ?.copyWith(color: MyTheme.primaryColor),
                   ),
-                  Text('Desc.', style: Theme.of(context).textTheme.titleMedium)
+                  Text(task.description ?? '≈',
+                      style: Theme.of(context).textTheme.titleMedium)
                 ],
-              )),
+                  )),
               Container(
                 padding: EdgeInsets.symmetric(vertical: 4, horizontal: 21),
                 decoration: BoxDecoration(

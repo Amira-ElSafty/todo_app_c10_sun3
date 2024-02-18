@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_todo_c10_sun3/firebase_utils.dart';
+import 'package:flutter_app_todo_c10_sun3/model/task.dart';
+import 'package:flutter_app_todo_c10_sun3/providers/list_provider.dart';
+import 'package:provider/provider.dart';
 
 class AddTaskBottomSheet extends StatefulWidget {
   @override
@@ -10,9 +14,11 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   var formKey = GlobalKey<FormState>();
   String title = '';
   String description = '';
+  late ListProvider listProvider;
 
   @override
   Widget build(BuildContext context) {
+    listProvider = Provider.of<ListProvider>(context);
     return Container(
       padding: EdgeInsets.all(15),
       child: Column(
@@ -56,7 +62,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                       return null;
                     },
                     decoration:
-                        InputDecoration(hintText: 'Enter Task Description'),
+                    InputDecoration(hintText: 'Enter Task Description'),
                     maxLines: 4,
                   ),
                   SizedBox(
@@ -75,7 +81,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     },
                     child: Text(
                       '${selectedDate.day}/${selectedDate.month}/'
-                      '${selectedDate.year}',
+                          '${selectedDate.year}',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
@@ -114,6 +120,16 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   void addTask() {
     if (formKey.currentState?.validate() == true) {
       /// add task
+      Task task =
+          Task(title: title, description: description, dateTime: selectedDate);
+      FirebaseUtils.addTaskToFireStore(task)
+          .timeout(Duration(milliseconds: 500), onTimeout: () {
+        print('task added successfully');
+
+        /// alert dialog , toast , snack bar
+        listProvider.getAllTasksFromFireStore();
+        Navigator.pop(context);
+      });
     }
   }
 }
