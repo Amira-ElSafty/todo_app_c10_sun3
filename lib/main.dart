@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_todo_c10_sun3/auth/login/login_screen.dart';
+import 'package:flutter_app_todo_c10_sun3/auth/register/register_screen.dart';
 import 'package:flutter_app_todo_c10_sun3/home/home_screen.dart';
 import 'package:flutter_app_todo_c10_sun3/my_theme.dart';
 import 'package:flutter_app_todo_c10_sun3/providers/list_provider.dart';
@@ -21,8 +23,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: HomeScreen.routeName,
-      routes: {HomeScreen.routeName: (context) => HomeScreen()},
+      initialRoute: LoginScreen.routeName,
+      routes: {
+        HomeScreen.routeName: (context) => HomeScreen(),
+        RegisterScreen.routeName: (context) => RegisterScreen(),
+        LoginScreen.routeName: (context) => LoginScreen(),
+      },
       theme: MyTheme.lightTheme,
     );
   }
