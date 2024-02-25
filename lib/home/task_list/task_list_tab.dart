@@ -2,6 +2,7 @@ import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_todo_c10_sun3/home/task_list/task_list_item.dart';
 import 'package:flutter_app_todo_c10_sun3/my_theme.dart';
+import 'package:flutter_app_todo_c10_sun3/providers/auth_provider.dart';
 import 'package:flutter_app_todo_c10_sun3/providers/list_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -14,8 +15,9 @@ class _TaskListTabState extends State<TaskListTab> {
   @override
   Widget build(BuildContext context) {
     var listProvider = Provider.of<ListProvider>(context);
+    var authProvider = Provider.of<AuthProviders>(context);
     if (listProvider.tasksList.isEmpty) {
-      listProvider.getAllTasksFromFireStore();
+      listProvider.getAllTasksFromFireStore(authProvider.currentUser!.id!);
     }
     return Container(
       child: Column(
@@ -27,7 +29,8 @@ class _TaskListTabState extends State<TaskListTab> {
               firstDate: DateTime.now().subtract(Duration(days: 365)),
               lastDate: DateTime.now().add(Duration(days: 365)),
               onDateSelected: (date) {
-                listProvider.changeSelectedDate(date);
+                listProvider.changeSelectedDate(
+                    date, authProvider.currentUser!.id!);
               },
               leftMargin: 20,
               monthColor: MyTheme.blackColor,
